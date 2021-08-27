@@ -31,11 +31,16 @@ class Search {
       ...stopWords.en,
       ...stopWords.sw,
     ]);
+<<<<<<< HEAD
     // Search full text if without common words no text is left. 
     if(!dataToSearch?.length){
       dataToSearch = escaped.toString().split(" ");
     }
 
+=======
+
+    if (dataToSearch.length) {
+>>>>>>> 3c354f3f2ee430547db61554150a01c7ff758167
       let string = dataToSearch.toString().replace(/,/g, "|");
       dataToRegex = new RegExp(string, "gi");
 
@@ -57,7 +62,11 @@ class Search {
               residence: 0,
               date_created: 0,
             }
+<<<<<<< HEAD
           ).limit(20);
+=======
+          ).limit(2);
+>>>>>>> 3c354f3f2ee430547db61554150a01c7ff758167
           break;
         case "posts":
           posts = await PostModel.find({ post: dataToRegex })
@@ -82,13 +91,21 @@ class Search {
               residence: 0,
               date_created: 0,
             }
+<<<<<<< HEAD
           ).limit(5);
+=======
+          ).limit(2);
+>>>>>>> 3c354f3f2ee430547db61554150a01c7ff758167
 
           posts = await PostModel.find({ post: dataToRegex })
             .sort({ _id: -1 })
             .limit(20);
           break;
       }
+<<<<<<< HEAD
+=======
+    }
+>>>>>>> 3c354f3f2ee430547db61554150a01c7ff758167
 
     for (let i = 0; i < posts.length; i++) {
       let userLikes = await PostLikeModel.find({

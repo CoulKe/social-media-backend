@@ -215,6 +215,7 @@ class Profile {
     }
   }
   async updateBio(req: Request, res: Response) {
+<<<<<<< HEAD
     try {
       const cookie = new Cookies(req, res);
       const id = cookie.get("id");
@@ -260,6 +261,46 @@ class Profile {
     } catch (err) {
       return res.status(500).json("Server error");
     }
+=======
+    const cookie = new Cookies(req, res);
+    const id = cookie.get("id");
+    const { bio } = req.body;
+
+    let userInfo = await UserModel.findOneAndUpdate(
+      { _id: id },
+      { bio },
+      {
+        projection: {
+          password: 0,
+          email: 0,
+          __v: 0,
+        },
+        new: true,
+      }
+    );
+
+    return res.json(userInfo);
+  }
+  async updateDetails(req: Request, res: Response) {
+    const cookie = new Cookies(req, res);
+    const id = cookie.get("id");
+    const { residence, school } = req.body;
+
+    let userInfo = await UserModel.findOneAndUpdate(
+      { _id: id },
+      { residence, school },
+      {
+        projection: {
+          password: 0,
+          email: 0,
+          __v: 0,
+        },
+        new: true,
+      }
+    );
+
+    return res.json(userInfo);
+>>>>>>> 3c354f3f2ee430547db61554150a01c7ff758167
   }
 }
 

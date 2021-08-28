@@ -142,6 +142,7 @@ export const RefreshTokens = async (req: Request, res: Response) => {
   let id = cookie.get("id");
   let oldRefreshToken = cookie.get("refreshToken");
   let username = cookie.get("username");
+  console.log({oldRefreshToken})
 
   if (!id || !username || !oldRefreshToken) {
     return res.status(401).json({ msg: "Session expired" });
@@ -168,6 +169,7 @@ export const RefreshTokens = async (req: Request, res: Response) => {
     res.status(200).json({ accessToken });
 
   } catch (error) {
+    console.log(error)
     return res.status(401).json({ msg: "Session expired" });
   }
 };

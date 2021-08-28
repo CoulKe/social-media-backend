@@ -2,7 +2,6 @@
 
 import { Request, Response } from "express";
 import { compare, hash } from "bcrypt";
-import mongoose from "mongoose";
 import Cookies from "cookies";
 import { validationResult } from "express-validator";
 import UserModel from "../models/user.model";

@@ -3,7 +3,6 @@ import UserModel from "../models/user.model";
 import PostModel from "../models/post.model";
 import PostLikeModel from "../models/post-like.model";
 import CommentModel from "../models/comment.model";
-import Cookies from "cookies";
 
 const regexEscape = require("regex-escape");
 const ObjectId = require("mongoose").Types.ObjectId;
@@ -11,8 +10,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 class Hashtag {
   async index(req: Request, res: Response) {
     let { hashtag, lastId } = req.query;
-    const cookie = new Cookies(req, res);
-    let authenticatedUser = cookie.get("username");
+    const {x_auth_username: authenticatedUser} = req.headers;
 
     let result = [];
 

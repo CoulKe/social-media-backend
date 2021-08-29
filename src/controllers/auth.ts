@@ -2,7 +2,6 @@
 
 import { Request, Response } from "express";
 import { compare, hash } from "bcrypt";
-import Cookies from "cookies";
 import { validationResult } from "express-validator";
 import UserModel from "../models/user.model";
 import NotificationController from "./notification";
@@ -114,36 +113,15 @@ export const LoginController = async (req: Request, res: Response) => {
     //Password is wrong
     if (!isMatch) return res.status(401).json({ msg: "Invalid credentials" });
 
-    let cookie = new Cookies(req, res);
     const [accessToken, refreshToken] = setAuthTokens(username, user._id);
 
-    let expiryDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 365);
-
-    cookie.set("id", user._id, {
-      httpOnly: false,
-      expires: expiryDate,
-    });
-    cookie.set("username", user.username, {
-      httpOnly: false,
-      expires: expiryDate,
-    });
-    cookie.set("refreshToken", refreshToken, {
-      httpOnly: true,
-      expires: expiryDate,
-    });
-
-    return res.status(200).json({ username, id: user._id, accessToken });
+    return res.status(200).json({ username, id: user._id, accessToken, refreshToken });
   } catch (err) {
     res.status(500).json("server error");
   }
 };
 export const RefreshTokens = async (req: Request, res: Response) => {
-  const cookie = new Cookies(req, res);
-  let id = cookie.get("id");
-  let oldRefreshToken = cookie.get("refreshToken");
-  let username = cookie.get("username");
-  console.log({oldRefreshToken})
-
+  const {x_auth_username: username, x_auth_id: id,x_refresh: oldRefreshToken} = req.headers;
   if (!id || !username || !oldRefreshToken) {
     return res.status(401).json({ msg: "Session expired" });
   }
@@ -157,16 +135,9 @@ export const RefreshTokens = async (req: Request, res: Response) => {
       return res.status(403).json({ msg: "Session expired" });
     }
 
-    let expiryDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 365);
+    const [accessToken, refreshToken] = setAuthTokens(username.toString(), id.toString());
 
-    const [accessToken, refreshToken] = setAuthTokens(username, id);
-
-    cookie.set("refreshToken", refreshToken, {
-      httpOnly: true,
-      expires: expiryDate,
-    });
-
-    res.status(200).json({ accessToken });
+    res.status(200).json({ accessToken, refreshToken });
 
   } catch (error) {
     console.log(error)
@@ -178,11 +149,6 @@ export const RefreshTokens = async (req: Request, res: Response) => {
  */
 export const LogoutController = async (req: Request, res: Response) => {
   try {
-    let cookies = req?.headers?.cookie?.split(/;/) || [];
-    cookies.forEach((cookie: string) => {
-      res.clearCookie(cookie.split("=")[0]);
-    });
-
     res.status(200).json({ msg: "Successfully logged out" });
   } catch (error) {
     return res.status(500).json({ msg: "Something went wrong" });

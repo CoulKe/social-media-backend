@@ -2,8 +2,6 @@
 
 import { Request, Response } from "express";
 const ObjectId = require("mongoose").Types.ObjectId;
-
-import Cookies from "cookies";
 import UserModel from "../models/user.model";
 import PostModel from "../models/post.model";
 import PostLikeModel from "../models/post-like.model";
@@ -14,11 +12,7 @@ class PostController {
    * Gets all posts with a set limit.
    */
   async index(req: Request, res: Response) {
-    let authenticatedUser = req.query.username;
-    const cookie = new Cookies(req, res);
-    const id = cookie.get('id');
-    const username = cookie.get('username');
-    const refreshToken = cookie.get('refreshToken');
+    const {x_auth_username: authenticatedUser, x_auth_id: id,x_refresh: refreshToken} = req.headers;
 
     try {
       //If the user is not logged in.
@@ -240,8 +234,7 @@ class PostController {
    */
   async single(req: Request, res: Response) {
     const { postId } = req.query;
-    const cookie = new Cookies(req, res);
-    const authenticatedUser = cookie.get("username");
+    const {x_auth_username: authenticatedUser} = req.headers;
 
     try {
       let post = await PostModel.aggregate([
@@ -307,8 +300,7 @@ class PostController {
    * @returns res
    */
   async store(req: Request, res: Response) {
-    const cookie = new Cookies(req, res);
-    let id = cookie.get("id");
+    const {x_auth_id: id} = req.headers;
     const { post } = req.body;
 
     if (!post.length)
@@ -389,8 +381,7 @@ class PostController {
    */
   async togglePinPost(req: Request, res: Response) {
     try {
-      const cookie = new Cookies(req, res);
-      const id = cookie.get("id");
+      const {x_auth_id: id} = req.headers;
       const { postId } = req.body;
       const oldPinnedPost = await PostModel.findOne({
         user_id: ObjectId(id),

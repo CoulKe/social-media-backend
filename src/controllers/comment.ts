@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import Cookies from "cookies";
 import CommentModel from "../models/comment.model";
 import PostModel from "../models/post.model";
 import UserModel from "../models/user.model";
@@ -12,10 +11,8 @@ const ObjectId = require("mongoose").Types.ObjectId;
 
 class CommentController {
   async index(req: Request, res: Response) {
-    const cookie = new Cookies(req, res);
-    // let  = req.query.postId;
     let { postId, lastCommentId, highlightId } = req.query;
-    const username = cookie.get("username");
+    const {x_auth_username: username} = req.headers;
 
     let filterQuery = {};
 
@@ -121,8 +118,7 @@ class CommentController {
     }
   }
   async single(req: Request, res: Response) {
-    const cookie = new Cookies(req, res);
-    const authenticatedUser = cookie.get("username");
+    const {x_auth_username: authenticatedUser} = req.headers;
     const { commentId, postId } = req.query;
 
     try {
@@ -143,9 +139,7 @@ class CommentController {
   }
 
   async store(req: Request, res: Response) {
-    const cookie = new Cookies(req, res);
-    const username = cookie.get("username") || "";
-    const id = cookie.get("id") || "";
+    const {x_auth_username: username, x_auth_id: id} = req.headers;
     const { postId, comment } = req.body;
 
     if (!comment.trim().length) {
@@ -212,8 +206,7 @@ class CommentController {
     }
   }
   async update(req: Request, res: Response) {
-    const cookie = new Cookies(req, res);
-    const username = cookie.get("username");
+    const {x_auth_username: username} = req.headers;
     const { commentId, comment } = req.body;
 
     try {

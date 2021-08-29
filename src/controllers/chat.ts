@@ -2,21 +2,19 @@
 
 import { Request, Response } from "express";
 import ChatModel from "../models/chat.model";
-import Cookies from "cookies";
 import UserModel from "../models/user.model";
 
 class ChatController {
   /**Method for displaying all the chats overview of the authenticated user. */
   async index(req: Request, res: Response) {
     try {
-      const cookie = new Cookies(req, res);
-      const username = cookie.get("username") || "";
+      const {x_auth_username: username} = req.headers;
       let result: any = [];
-      let chats = await ChatModel.find({$or: [{sender: username},{recipient: username}]},{__v: 0});
+      let chats = await ChatModel.find({$or: [{sender: username},{recipient: username?.toString()}]},{__v: 0});
       
       for(let chat of chats){
         let userToGet = '';
-        if(chat.sender === username){
+        if(chat.sender === username?.toString()){
           userToGet = chat.recipient;
         }
         else{
@@ -40,8 +38,7 @@ class ChatController {
   }
   async checkNew(req: Request, res: Response){
     try {
-      const cookie = new Cookies(req, res);
-      const username = cookie.get("username") || "";
+      const {x_auth_username: username} = req.headers;
       let hasNew = await ChatModel.exists({notified: false, recipient: username});
       res.json({hasNew});
 

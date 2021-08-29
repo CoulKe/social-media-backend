@@ -1,4 +1,3 @@
-import Cookies from "cookies";
 import { Request, Response } from "express";
 import UserModel from "../models/user.model";
 import CommentLikeModel from "../models/comment-like.model";
@@ -9,9 +8,7 @@ import { createTextSnippet } from "../utils/format";
 
 class CommentLikeController {
   async storeOrDestroy(req: Request, res: Response) {
-    const cookie = new Cookies(req, res);
-    const username = cookie.get("username");
-    const id = cookie.get("id");
+    const {x_auth_username: username, x_auth_id: id} = req.headers;
     let { postId, commentId } = req.body;
 
     try {

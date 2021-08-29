@@ -1,6 +1,5 @@
 /**Middleware for verifying user is authorized. */
 
-import Cookies from "cookies";
 import { Request, Response, NextFunction } from "express";
 import { isValidObjectId } from "../../utils/checkValidity";
 
@@ -12,14 +11,12 @@ export default function verifyAuth(
   res: Response,
   next: NextFunction
 ) {
-  let cookie = new Cookies(req, res);
-  let username = cookie.get("username");
-  let id = cookie.get("id") || "";
+  const {x_auth_username: username, x_auth_id: id=""} = req.headers;
   let accessToken = req?.headers?.authorization?.split(" ")[1];
-  let refreshToken = cookie.get("refreshToken");
+  let refreshToken = req.header('x_refresh');
   let secret = process.env.ACCESS_TOKEN_SECRET || "";
 
-  let isValidId = isValidObjectId(id);
+  let isValidId = isValidObjectId(id.toString());
 
   if (!username || !isValidId)
     return res.status(403).json({ msg: "Invalid credentials" });

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { createTextSnippet } from "../utils/format";
-import Cookies from "cookies";
 const ObjectId = require("mongoose").Types.ObjectId;
 import PostModel from "../models/post.model";
 import UserModel from "../models/user.model";
@@ -10,9 +9,7 @@ import NotificationController from "./notification";
 class PostLikeController {
   /**Creates like of a post by a user if it doesn't exist and deletes if exists. */
   async store(req: Request, res: Response) {
-    const cookie = new Cookies(req, res);
-    const username = cookie.get("username") || "";
-    const userId = cookie.get("id") || "";
+    const {x_auth_username: username="", x_auth_id: userId=""} = req.headers;
     let { postId } = req.body;
 
     /**Confirm post hasn't been deleted. */
@@ -62,7 +59,7 @@ class PostLikeController {
           let user = await UserModel.findOne({ username });
 
           await NotificationController.store(
-            userId,
+            userId.toString(),
             "like",
             `<b>${user.first_name} ${user.last_name}</b> liked your <b>post</b>: "${postSnippet}"`,
             postId

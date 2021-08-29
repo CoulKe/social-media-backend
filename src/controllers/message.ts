@@ -1,6 +1,5 @@
 /**Controller for showing and composing messages */
 
-import Cookies from "cookies";
 import { createChatName, createTextSnippet } from "../utils/format";
 import { Request, Response } from "express";
 
@@ -44,11 +43,9 @@ class MessageController {
   }
   /**Displays new messages. */
   async newMessage(req: Request, res: Response) {
-    const cookie = new Cookies(req, res);
     const { recipient } = req.params;
     const { lastId } = req.query;
-    // const lastId = "";
-    const authenticatedUser = cookie.get("username") || "";
+    const {x_auth_username: authenticatedUser} = req.headers;
 
     let chatName = "";
     if (recipient && authenticatedUser) {
@@ -79,9 +76,6 @@ class MessageController {
 
   async getUsers(req: Request, res: Response) {
     try {
-      const cookie = new Cookies(req, res);
-      const id = cookie.get("id");
-      const username = cookie.get("username");
       const { user } = req.params;
       let escaped = regexEscape(user);
       let dataToRegex = new RegExp(escaped, "gi");

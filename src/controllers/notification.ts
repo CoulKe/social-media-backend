@@ -1,12 +1,10 @@
 import { Response, Request } from "express";
-import Cookies from "cookies";
 import NotificationModel from "../models/notification.model";
 const ObjectId = require("mongoose").Types.ObjectId;
 
 class NotificationController {
   async index(req: Request, res: Response) {
-    let cookie = new Cookies(req, res);
-    let id = cookie.get("id");
+    const {x_auth_id: id} = req.headers;
     try {
       let notifications = await NotificationModel.find({user_id: ObjectId(id)},{__v: 0, user_id: 0});
       for(let notification of notifications){
@@ -21,8 +19,7 @@ class NotificationController {
   }
 
   async getNewNotifications(req: Request, res: Response) {
-    let cookie = new Cookies(req, res);
-    let id = cookie.get("id");
+    const {x_auth_id: id} = req.headers;
     let { lastId } = req.query;
 
     try {
@@ -41,8 +38,7 @@ class NotificationController {
     }
   }
   async checkNew(req: Request, res: Response) {
-    let cookie = new Cookies(req, res);
-    let id = cookie.get("id");
+    const {x_auth_id: id} = req.headers;
 
     try {
       let hasNew = await NotificationModel.exists({user_id: ObjectId(id), notified: false});
@@ -97,8 +93,7 @@ class NotificationController {
     }
   }
   async markAllAsRead(req: Request, res: Response) {
-    const cookie = new Cookies(req, res);
-    let id = cookie.get("id");
+    const { x_auth_id: id} = req.headers;
 
     try {
       await NotificationModel.updateMany(

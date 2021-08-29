@@ -4,15 +4,13 @@ import UserModel from "../models/user.model";
 import CommentModel from "../models/comment.model";
 import PostModel from "../models/post.model";
 import PostLikeModel from "../models/post-like.model";
-import Cookies from "cookies";
 let regexEscape = require("regex-escape");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 class Search {
   async index(req: Request, res: Response) {
-    const cookie = new Cookies(req, res);
     const { value: fullText, searchFilter } = req.query;
-    let authenticatedUser = cookie.get("username");
+    const {x_auth_username: authenticatedUser} = req.headers;
 
     let dataToSearch = [];
     let dataToRegex;

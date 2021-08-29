@@ -1,6 +1,5 @@
 /**Controller for user details. */
 import { Request, Response } from "express";
-import Cookies from "cookies";
 import UserModel from "../models/user.model";
 import PostModel from "../models/post.model";
 import PostLikeModel from "../models/post-like.model";
@@ -12,9 +11,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 class Profile {
   async index(req: Request, res: Response) {
     const { username } = req.query;
-    const cookie = new Cookies(req, res);
-    let authenticatedUser = cookie.get("username");
-    let authId = cookie.get("id");
+    const {x_auth_username: authenticatedUser, x_auth_id: authId} = req.headers;
     let isFollowing;
     let userInfo = await UserModel.findOne(
       { username },
@@ -216,8 +213,7 @@ class Profile {
   }
   async updateBio(req: Request, res: Response) {
     try {
-      const cookie = new Cookies(req, res);
-      const id = cookie.get("id");
+      const {x_auth_id: id} = req.headers;
       const { bio } = req.body;
 
       let userInfo = await UserModel.findOneAndUpdate(
@@ -240,8 +236,7 @@ class Profile {
   }
   async updateDetails(req: Request, res: Response) {
     try {
-      const cookie = new Cookies(req, res);
-      const id = cookie.get("id");
+      const {x_auth_id: id} = req.headers;
       const { residence, school } = req.body;
 
       let userInfo = await UserModel.findOneAndUpdate(
